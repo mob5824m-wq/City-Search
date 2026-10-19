@@ -42,7 +42,7 @@ to the official routes for a residential ownership record (MPAC, ONLAND, city cl
 All requests go directly from the browser to the cities' ArcGIS FeatureServer endpoints
 (`services1.arcgis.com` and `services.arcgis.com`). There is no backend, API key, database
 or scraper — and no basemap provider, since the map is drawn locally. If you later want
-street tiles, `assets/js/map.js` is the single place to add them (and their key).
+street tiles, `assets/js/basemap.js` is the single place to add them (and their key).
 
 ### Privacy
 
@@ -85,6 +85,9 @@ node tests/sample-dom.local.mjs    # every view against the offline sample
 node tests/boot.local.mjs          # real index.html + router + nav states
 OFFLINE=1 node tests/boot.local.mjs  # same, with the network down
 node tests/saved.local.mjs         # save/unsave + badge state
+node tests/map.local.mjs           # local map: projection, pan/zoom, zero requests
+node tests/propertymap.local.mjs   # property page renders the map offline
+node tests/e2e-served.local.mjs    # boots the served index.html end to end
 ```
 
 ## Project structure
@@ -101,7 +104,7 @@ assets/js/
   sample.js                small real-data extract for offline fallback
   util.js                  pure helpers (parsing, grouping, CSV, formatting)
   store.js                 saved records (localStorage)
-  map.js                   self-contained SVG map (no tiles, no key)
+  basemap.js               self-contained SVG map (no tiles, no key)
   ui.js                    search combobox, tags, toasts, shared components
   views/                   home, search, owner, property, saved, about
 server.py                  small static server (0.0.0.0, PORT)

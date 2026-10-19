@@ -12,7 +12,7 @@ const createdImages = [];
 const OriginalImage = win.Image;
 win.Image = function (...args) { createdImages.push(args); return new OriginalImage(...args); };
 
-const { renderMap } = await import("../assets/js/map.js");
+const { renderMap } = await import("../assets/js/basemap.js");
 
 const card = document.createElement("div");
 card.className = "map-card";

@@ -108,14 +108,15 @@ export function renderMap(container, points, options = {}) {
         <button type="button" data-zoom="out" aria-label="Zoom out">−</button>
         <button type="button" data-zoom="fit" aria-label="Fit all properties">Fit</button>
       </div>
-      <a class="locmap__osm" data-osm target="_blank" rel="noopener">Open in OpenStreetMap</a>
+      <a class="locmap__osm" data-osm-area target="_blank" rel="noopener">Open in OpenStreetMap</a>
     </div>
     <p class="locmap__hint">Drag to pan · double-click to zoom</p>
+    <p class="locmap__credit">Drawn from city coordinates — no tile service</p>
   </div>`;
 
   const root = container.querySelector("[data-locmap]");
   const svg = root.querySelector("svg");
-  const osmLink = root.querySelector("[data-osm]");
+  const osmLink = root.querySelector("[data-osm-area]");
 
   function measure() {
     const width = container.clientWidth || DEFAULT_SIZE.width;

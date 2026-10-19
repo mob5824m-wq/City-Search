@@ -4,7 +4,7 @@ import {
   formatDate, buildOwnerHref, naturalCompare,
 } from "../util.js";
 import { icon, typeTag, breadcrumb, emptyState, toast, copyLink, printPage, formatCurrency, formatCoords, sampleTag } from "../ui.js";
-import { renderMap, openStreetMapLink } from "../map.js";
+import { renderMap, openStreetMapLink } from "../basemap.js";
 import { isPropertySaved, toggleProperty } from "../store.js";
 import { OFFICIAL, SOURCES } from "../config.js";
 

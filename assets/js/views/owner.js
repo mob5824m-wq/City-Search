@@ -5,7 +5,7 @@ import {
   buildPropertyHref, isLinkableBuilding,
 } from "../util.js";
 import { icon, typeTag, breadcrumb, emptyState, toast, copyLink, printPage, sampleTag } from "../ui.js";
-import { renderMap, pointsFromBuildings } from "../map.js";
+import { renderMap, pointsFromBuildings } from "../basemap.js";
 import { isOwnerSaved, toggleOwner } from "../store.js";
 import { SOURCES } from "../config.js";
 
