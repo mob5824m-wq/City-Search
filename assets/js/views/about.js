@@ -96,13 +96,15 @@ export function renderAbout(root) {
             </ul>
 
             <h2 id="residential">If you need a residential owner</h2>
-            <p>There is a lawful route for nearly every property. It usually takes one of these three forms:</p>
+            <p>There is a lawful route for nearly every property. It usually takes one of these four forms:</p>
             <h3>1. Start with MPAC</h3>
             <p><a href="${OFFICIAL.mpac.href}" target="_blank" rel="noopener">AboutMyProperty</a> gives a property owner free access to the assessment details for their own property, including the roll number. The roll number is the key used by the city and by MPAC. Your tax bill or assessment notice also carries it.</p>
             <h3>2. Pull the parcel register on ONLAND</h3>
             <p><a href="${OFFICIAL.onland.href}" target="_blank" rel="noopener">ONLAND</a> is Ontario's land property records portal. A parcel register search (a small fee) returns the registered owner, the PIN, title history and registered charges. You can search by PIN or by address. Since the province closed in-person land registry counters in 2020, this is the standard route.</p>
-            <h3>3. Ask the municipality</h3>
-            <p>The City Clerk can help with assessment roll information and formal records requests. Some personal information may still be withheld under MFIPPA. Start with <a href="${OFFICIAL.kitchenerClerk.href}" target="_blank" rel="noopener">Kitchener's access to information page</a> or <a href="${OFFICIAL.waterlooClerk.href}" target="_blank" rel="noopener">Waterloo's</a>.</p>
+            <h3>3. Inspect the assessment roll</h3>
+            <p>Ontario's assessment roll lists the owner of record for each property, and it is available for inspection at the municipality. Ask at the City Clerk's office — Kitchener City Hall, 200 King Street West, or Waterloo City Hall, 100 Regina Street South — during office hours. You can view the roll; copying and reuse are restricted.</p>
+            <h3>4. Ask the municipality in writing</h3>
+            <p>A formal freedom-of-information request can be made for city records, but personal information about a homeowner is usually withheld under MFIPPA. Start with <a href="${OFFICIAL.kitchenerClerk.href}" target="_blank" rel="noopener">Kitchener's access to information page</a> or <a href="${OFFICIAL.waterlooClerk.href}" target="_blank" rel="noopener">Waterloo's</a>.</p>
 
             <h2 id="permits">Building permits</h2>
             <p>Permit history comes from each city's open building permit dataset and is matched to the property by civic address. It includes permit type, work, status, year and — where published — construction value and a short description.</p>
@@ -114,7 +116,7 @@ export function renderAbout(root) {
             <h3>Can I filter for residential buildings?</h3>
             <p>Not reliably. Neither city publishes a building-use or property-class field in these open datasets, so there is no honest way to filter a list to “residential only”. Kitchener's zoning, parcels and assessment data are not open. Search by address for a specific home, or use the city's zoning map and MPAC for class information.</p>
             <h3>Can I search a person's name?</h3>
-            <p>For a business or institution, yes. For an individual homeowner, no — the name is protected and the public dataset does not contain it. Use MPAC or ONLAND instead.</p>
+            <p>For a business or institution, yes. For an individual homeowner, no — the name is protected and the public dataset does not contain it. To identify the owner of one specific property, pull a parcel register on <a href="https://www.onland.ca/" target="_blank" rel="noopener">ONLAND</a> by address or PIN; it returns the registered owner for a small fee. For your own property, MPAC AboutMyProperty is free.</p>
             <h3>Why does one owner have hundreds of “records”?</h3>
             <p>Apartment buildings are recorded unit by unit, and the source repeats some rows. The portfolio page groups rows into buildings and counts distinct units so the picture stays readable.</p>
             <h3>Is this a title search?</h3>

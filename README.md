@@ -23,6 +23,9 @@ to the official routes for a residential ownership record (MPAC, ONLAND, city cl
 - **Built for real use** — live data with in-memory caching, debounced autocomplete,
   keyboard navigation, shareable URLs, saved records in `localStorage`, responsive layout
   and print styles.
+- **No map key** — the basemap is OpenStreetMap's keyless tile server. If tiles are blocked,
+  the map drops the basemap and shows the properties on a coordinate-true canvas with an
+  OpenStreetMap link, never a provider error.
 - **Graceful failure** — if the city services are unreachable, the app switches to a small,
   clearly labelled sample of real records and offers a retry.
 
@@ -37,7 +40,8 @@ to the official routes for a residential ownership record (MPAC, ONLAND, city cl
 
 All requests go directly from the browser to the cities' ArcGIS FeatureServer endpoints
 (`services1.arcgis.com` and `services.arcgis.com`). There is no backend, API key, database
-or scraper.
+or scraper. Basemap tiles come from `tile.openstreetmap.org` and need no key; the tile URL
+and attribution live in `assets/js/config.js` (`MAP`) if you ever want to swap providers.
 
 ### Privacy
 

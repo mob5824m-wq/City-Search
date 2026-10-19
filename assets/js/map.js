@@ -1,12 +1,13 @@
 /**
  * Thin Leaflet wrapper with a graceful, self-contained fallback.
- * Tiles come from CARTO/OpenStreetMap; the dots are drawn locally.
+ * Tiles come from OpenStreetMap (no API key); the dots are drawn locally.
+ * If the tile server is unreachable or refuses the request, the basemap is
+ * dropped and the markers stay on a plain, coordinate-true canvas — the app
+ * never shows a third-party "API key required" error.
  */
 
 import { escapeHtml } from "./util.js";
-
-const TILE_URL = "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png";
-const ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>';
+import { MAP } from "./config.js";
 
 export function renderMap(container, points, options = {}) {
   if (!container) return null;
@@ -39,12 +40,31 @@ export function renderMap(container, points, options = {}) {
     map.getContainer().setAttribute("aria-label", options.ariaLabel);
   }
 
-  window.L.tileLayer(TILE_URL, {
-    attribution: ATTRIBUTION,
-    maxZoom: 19,
-    subdomains: "abcd",
+  const tiles = window.L.tileLayer(MAP.tiles, {
+    attribution: MAP.attribution,
+    maxZoom: MAP.maxZoom || 19,
     detectRetina: true,
   }).addTo(map);
+
+  let tilesLoaded = 0;
+  let degraded = false;
+  const card = container.closest(".map-card") || container;
+  const degrade = () => {
+    if (degraded || tilesLoaded > 0) return;
+    degraded = true;
+    try { map.removeLayer(tiles); } catch { /* already gone */ }
+    card.classList.add("map-card--plain");
+    if (!card.querySelector(".map-card__note")) {
+      const note = document.createElement("div");
+      note.className = "map-card__note";
+      note.textContent = MAP.note || "Street basemap unavailable";
+      card.appendChild(note);
+    }
+  };
+  tiles.on("tileload", () => { tilesLoaded += 1; });
+  tiles.on("tileerror", () => { setTimeout(degrade, 900); });
+  // Some blocked networks never fire tileerror; if nothing loaded, still degrade.
+  setTimeout(degrade, 4000);
 
   const markers = new Map();
   const bounds = window.L.latLngBounds();
@@ -127,15 +147,28 @@ function highlight(markers, key) {
 }
 
 function fallbackHtml(points, options) {
-  const first = points && points[0];
+  const valid = points || [];
+  const first = valid[0];
   const link = first
     ? `<a href="https://www.openstreetmap.org/#map=16/${first.lat}/${first.lng}" target="_blank" rel="noopener">Open this area in OpenStreetMap</a>`
     : "";
+  const coords = first ? `${Number(first.lat).toFixed(5)}, ${Number(first.lng).toFixed(5)}` : "";
+  const count = valid.length > 1 ? `${valid.length} properties` : "";
+  const body = options && options.emptyMessage
+    ? escapeHtml(options.emptyMessage)
+    : "The street basemap couldn't load, so this is a locator card rather than a map.";
   return `<div class="map-card__fallback">
-    <div>
-      <strong style="display:block;color:var(--ink);margin-bottom:4px;">Map unavailable</strong>
-      <span>${options && options.emptyMessage ? escapeHtml(options.emptyMessage) : "The map tiles could not be loaded."}</span>
-      ${link ? `<div style="margin-top:8px;font-size:12px;">${link}</div>` : ""}
+    <div class="map-card__locator">
+      <svg viewBox="0 0 120 84" aria-hidden="true" focusable="false">
+        <rect x="0.5" y="0.5" width="119" height="83" rx="8" fill="none" stroke="currentColor" stroke-opacity=".18"/>
+        <path d="M18 0v84M54 0v84M90 0v84M0 26h120M0 58h120" stroke="currentColor" stroke-opacity=".12"/>
+        <circle cx="60" cy="42" r="15" fill="currentColor" fill-opacity=".1"/>
+        <circle cx="60" cy="42" r="5.5" fill="var(--clay)" stroke="var(--card)" stroke-width="2"/>
+      </svg>
+      <strong>Map preview unavailable</strong>
+      <span>${body}</span>
+      ${coords ? `<span class="map-card__coords">${escapeHtml(coords)}${count ? ` · ${escapeHtml(count)}` : ""}</span>` : ""}
+      ${link ? `<span class="map-card__link">${link}</span>` : ""}
     </div>
   </div>`;
 }

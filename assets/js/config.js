@@ -117,6 +117,20 @@ export const OFFICIAL = {
   },
 };
 
+/**
+ * Basemap. OpenStreetMap's tile server needs no key or account, which keeps
+ * the app working without third-party credentials. If you outgrow it, point
+ * `tiles` at a hosted provider (and add its key) here — nothing else changes.
+ * If tiles fail, the map falls back to a coordinate-true canvas, never an
+ * error from the provider.
+ */
+export const MAP = {
+  tiles: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors',
+  maxZoom: 19,
+  note: "Street basemap unavailable — markers keep their real positions",
+};
+
 export const LIMITS = {
   suggestOwners: 6,
   suggestAddresses: 6,

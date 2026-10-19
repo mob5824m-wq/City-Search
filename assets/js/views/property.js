@@ -194,8 +194,14 @@ function kitchenerOwnerCard(building, publicUnits, privateUnits) {
         <div class="private-callout__icon">${icon("shield", "ico--lg")}</div>
         <div>
           <h3>Owner name is private</h3>
-          <p>This property is individually owned, so the City of Kitchener does not publish the owner's name under Ontario's Municipal Freedom of Information and Protection of Privacy Act. The city does record that it is privately owned.</p>
-          <p style="margin-top:8px"><a href="#/about">How to request a residential ownership record →</a></p>
+          <p>This home is individually owned, so the City of Kitchener withholds the owner's name under Ontario's Municipal Freedom of Information and Protection of Privacy Act. The city still records that it is privately owned, and the rest of this record stays public.</p>
+          <p class="private-callout__sub">To find the owner of a specific home, use one of these lawful routes:</p>
+          <ol class="steps">
+            <li><strong>ONLAND parcel register</strong> — the registered owner, PIN and title history for this address. Open to anyone for a small fee; the Waterloo registry office is LRO 58. <a href="https://www.onland.ca/" target="_blank" rel="noopener">Search on ONLAND</a></li>
+            <li><strong>The assessment roll</strong> — owner names on the roll can be inspected in person at the City Clerk's office at Kitchener City Hall during office hours.</li>
+            <li><strong>MPAC AboutMyProperty</strong> — free if you own the property; it shows the assessment details and roll number used by the city. <a href="https://www.aboutmyproperty.ca/" target="_blank" rel="noopener">Open MPAC</a></li>
+          </ol>
+          <p class="private-callout__fine">A freedom-of-information request rarely helps for a private home: MFIPPA lets the city refuse personal information. <a href="#/about?section=residential">Full data guide →</a></p>
         </div>
       </div>
     </div>`;
