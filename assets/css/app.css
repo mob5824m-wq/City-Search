@@ -1310,7 +1310,8 @@ a.rank:hover { background: #f7f2e7; }
   position: absolute;
   inset: 0;
   overflow: hidden;
-  background: #f0ece0;
+  background:
+    radial-gradient(120% 90% at 50% 0%, #f6f2e7 0%, #f0ece0 55%, #e9e4d5 100%);
 }
 .locmap__svg {
   display: block;
@@ -1322,7 +1323,8 @@ a.rank:hover { background: #f7f2e7; }
 }
 .locmap.is-dragging .locmap__svg { cursor: grabbing; }
 .locmap__bg { fill: #f0ece0; }
-.locmap__grid line { stroke: rgba(18, 53, 43, .09); stroke-width: 1; }
+.locmap__grid line { stroke: rgba(18, 53, 43, .13); stroke-width: 1; }
+.locmap__grid line:nth-child(5n) { stroke: rgba(18, 53, 43, .2); }
 .locmap__marker { cursor: pointer; }
 .locmap__halo { fill: rgba(173, 81, 40, .16); opacity: 0; transition: opacity .15s ease; }
 .locmap__marker:hover .locmap__halo,
