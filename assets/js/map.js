@@ -54,7 +54,7 @@ export function renderMap(container, points, options = {}) {
       radius: options.big ? 8 : 6,
       color: "#fffdf8",
       weight: 1.6,
-      fillColor: options.color || "#bd5a31",
+      fillColor: options.color || "#ad5128",
       fillOpacity: 1,
       bubblingMouseEvents: false,
     }).addTo(map);
@@ -76,7 +76,7 @@ export function renderMap(container, points, options = {}) {
     marker.on("mouseover", () => marker.setStyle({ fillColor: "#12352b" }));
     marker.on("mouseout", () => {
       const active = options.activeKey && p.key === options.activeKey;
-      marker.setStyle({ fillColor: active ? "#12352b" : (options.color || "#bd5a31") });
+      marker.setStyle({ fillColor: active ? "#12352b" : (options.color || "#ad5128") });
     });
 
     if (p.key) markers.set(p.key, marker);
@@ -121,7 +121,7 @@ export function renderMap(container, points, options = {}) {
 
 function highlight(markers, key) {
   markers.forEach((marker, k) => {
-    marker.setStyle({ fillColor: k === key ? "#12352b" : "#bd5a31", radius: k === key ? 8 : 6 });
+    marker.setStyle({ fillColor: k === key ? "#12352b" : "#ad5128", radius: k === key ? 8 : 6 });
     if (k === key && marker.bringToFront) marker.bringToFront();
   });
 }

@@ -32,15 +32,15 @@
   --card: #fffdf8;
   --ink: #14241d;
   --ink-soft: #3b4c44;
-  --muted: #6d7a70;
-  --muted-2: #8b958c;
+  --muted: #5c6a60;
+  --muted-2: #63736a;
   --line: #e2dbcb;
   --line-strong: #cec4ae;
   --green: #12352b;
   --green-2: #1b5140;
   --green-3: #2c6a56;
   --green-wash: #e8efe8;
-  --clay: #bd5a31;
+  --clay: #ad5128;
   --clay-deep: #9d4725;
   --clay-wash: #f6e5da;
   --gold: #b98a3d;
@@ -82,7 +82,7 @@ body::before {
   z-index: -1;
   pointer-events: none;
   background:
-    radial-gradient(1100px 500px at 78% -8%, rgba(189, 90, 49, .065), transparent 68%),
+    radial-gradient(1100px 500px at 78% -8%, rgba(173, 81, 40, .065), transparent 68%),
     radial-gradient(900px 600px at 4% 4%, rgba(27, 81, 64, .06), transparent 65%);
 }
 
@@ -172,7 +172,7 @@ h1:focus, h2:focus { outline: none; }
   letter-spacing: .12em;
   vertical-align: 2px;
   color: var(--clay);
-  border: 1px solid rgba(189, 90, 49, .35);
+  border: 1px solid rgba(173, 81, 40, .35);
   border-radius: 4px;
   padding: 2px 4px 1px;
 }
@@ -623,7 +623,7 @@ h1:focus, h2:focus { outline: none; }
   top: 40%;
   transform: rotate(-9deg);
   padding: 5px 9px;
-  border: 1.5px solid rgba(189, 90, 49, .55);
+  border: 1.5px solid rgba(173, 81, 40, .55);
   border-radius: 3px;
   color: var(--clay);
   font-family: var(--mono);
@@ -1247,7 +1247,7 @@ a.rank:hover { background: #f7f2e7; }
 .footer-legal p { font-size: 10.5px; line-height: 1.65; color: #8fa393; max-width: 980px; }
 .footer-legal a { color: #b9c9ba; text-decoration: underline; text-underline-offset: 2px; text-decoration-color: rgba(185, 201, 186, .35); }
 .footer-legal a:hover { color: #f5efdf; }
-.footer-fineprint { color: #7d9181 !important; font-family: var(--mono); font-size: 9.5px !important; letter-spacing: .04em; margin-top: 4px; }
+.footer-fineprint { color: #93a793 !important; font-family: var(--mono); font-size: 9.5px !important; letter-spacing: .04em; margin-top: 4px; }
 
 /* ---------- Leaflet skin ---------- */
 
@@ -1407,7 +1407,7 @@ a.rank:hover { background: #f7f2e7; }
 
 .record.is-highlight {
   border-color: var(--clay);
-  box-shadow: 0 0 0 3px rgba(189, 90, 49, .14);
+  box-shadow: 0 0 0 3px rgba(173, 81, 40, .14);
 }
 
 .prose h2[id] { scroll-margin-top: calc(var(--header-h) + 22px); }
