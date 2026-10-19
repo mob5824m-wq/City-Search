@@ -1,0 +1,16 @@
+{
+  "name": "ledger-kw",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Search public property records for Kitchener & Waterloo by owner name or address.",
+  "scripts": {
+    "start": "python3 server.py",
+    "dev": "python3 server.py",
+    "test": "node --test tests/*.test.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT"
+}
