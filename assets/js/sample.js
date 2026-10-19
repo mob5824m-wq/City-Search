@@ -24,6 +24,8 @@ const K_ROWS = [
   { owner: "ACTIVA HOLDINGS INC", civic: 104, street: "BENNINGER DR", unit: null, propertyUnitId: 40293818, lat: 43.406583, lng: -80.535641 },
   { owner: "ACTIVA HOLDINGS INC", civic: 108, street: "BENNINGER DR", unit: null, propertyUnitId: 40293819, lat: 43.406672, lng: -80.535736 },
   { owner: "CITY OF KITCHENER", civic: 200, street: "KING ST W", unit: null, propertyUnitId: 40250001, lat: 43.451639, lng: -80.492489 },
+  { owner: "PRIVATE", civic: 35, street: "HOMEWOOD AVE", unit: null, propertyUnitId: 1020336, lat: 43.4423562, lng: -80.4986193 },
+  { owner: "PRIVATE", civic: 44, street: "HOMEWOOD AVE", unit: null, propertyUnitId: 1052005, lat: 43.4427922, lng: -80.4988592 },
 ];
 
 const W_PLACES = [
@@ -61,7 +63,7 @@ export function getSampleStats() {
 
 export function sampleOwnerNames() {
   const counts = new Map();
-  K_ROWS.forEach((r) => counts.set(r.owner, (counts.get(r.owner) || 0) + 1));
+  K_ROWS.filter((r) => r.owner !== "PRIVATE").forEach((r) => counts.set(r.owner, (counts.get(r.owner) || 0) + 1));
   return Array.from(counts.entries()).map(([name, count]) => ({ name, count }));
 }
 
@@ -85,7 +87,7 @@ export function sampleGetTopOwners(limit = 8) {
 
 export function sampleGetOwnerPortfolio(rawName) {
   const name = String(rawName || "").trim().toUpperCase();
-  const rows = K_ROWS.filter((r) => r.owner === name);
+  const rows = name === "PRIVATE" ? [] : K_ROWS.filter((r) => r.owner === name);
   return {
     owner: name,
     rows,

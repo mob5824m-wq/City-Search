@@ -65,6 +65,21 @@ test("sample stats and top owners", () => {
   assert.ok(top[0].count >= top[1].count);
 });
 
+test("privately owned homes are searchable by address but never by name", () => {
+  const home = sampleSearchAddresses("35 Homewood", "all");
+  assert.equal(home.buildings.length, 1);
+  assert.equal(home.buildings[0].address, "35 Homewood Ave");
+  assert.equal(home.buildings[0].isPrivate, true);
+  assert.equal(home.buildings[0].publicOwners.length, 0);
+
+  // "PRIVATE" is a marker, not an owner: it must never surface as a name,
+  // a leaderboard entry, or a portfolio.
+  assert.equal(sampleSearchOwners("private").length, 0);
+  assert.equal(sampleSearchOwners("PRIVATE").length, 0);
+  assert.ok(sampleGetTopOwners(50).every((o) => o.name !== "PRIVATE"));
+  assert.equal(sampleGetOwnerPortfolio("PRIVATE").buildings.length, 0);
+});
+
 /*
  * The sample uses 213 PASTERN TRAIL for Waterloo. It has no house-number
  * prefix in CIVIC_ADDR's title-cased display, so this guards the title-casing

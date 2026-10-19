@@ -193,7 +193,7 @@ export function mountSearch(slot, options = {}) {
 
   function tipText() {
     if (state.mode === "name") return "Public business, institution & government owners";
-    return "Addresses in both Kitchener and Waterloo";
+    return "Any home or building in Kitchener or Waterloo";
   }
 
   function syncControls() {
@@ -213,7 +213,7 @@ export function mountSearch(slot, options = {}) {
     tip.textContent = tipText();
     input.placeholder = state.mode === "name"
       ? "Try “Drewlo Holdings” or “Boardwalk”"
-      : "Try “200 King St W” or “213 Pastern Trail”";
+      : "Try “35 Homewood Ave” or “213 Pastern Trail”";
     clearBtn.classList.toggle("is-visible", !!input.value);
   }
 
@@ -238,7 +238,7 @@ export function mountSearch(slot, options = {}) {
     if (!items.length) {
       list.innerHTML = state.mode === "name"
         ? `<div class="suggest__empty">No public owner names match “${escapeHtml(q)}”. Residential owners are privacy-protected — try an address instead.</div>`
-        : `<div class="suggest__empty">No addresses found for “${escapeHtml(q)}”. Try a civic number and street, like “200 King St W”.</div>`;
+        : `<div class="suggest__empty">No addresses found for “${escapeHtml(q)}”. Try a civic number and street, like “35 Homewood Ave”.</div>`;
       openSuggestions();
       return;
     }

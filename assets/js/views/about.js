@@ -62,7 +62,7 @@ export function renderAbout(root) {
             <div class="pullquote">“The city's open data can tell you that a property is privately owned. It cannot tell you who the individual is.”
               <cite>How Kitchener publishes its ownership layer</cite>
             </div>
-            <p>That means a search for a person's name will usually return nothing — not because the tool is broken, but because the information is not in the open dataset. The section below explains the official routes to a residential ownership record.</p>
+            <p>That means a search for a person's name will usually return nothing — not because the tool is broken, but because the information is not in the open dataset. You can still look up any residential address: the building record and its permits are public even when the owner's name is not. The section below explains the official routes to a residential ownership record.</p>
             <p>Waterloo is different again: the city publishes <strong>civic addresses and building permits</strong>, but it does not publish an ownership layer at all. Waterloo addresses therefore appear here without an owner name.</p>
 
             <table class="source-table">
@@ -109,6 +109,10 @@ export function renderAbout(root) {
             <p>Coverage is not complete. Not every permit is published, older records may be missing, and construction value is declared by the applicant. A permit is a record of work authorized by the city, not proof that the work was done or inspected.</p>
 
             <h2 id="faq">Common questions</h2>
+            <h3>Can I search for a house?</h3>
+            <p>Yes. Search its civic address in either city, for example <a href="#/search?q=35%20Homewood%20Ave&amp;mode=address&amp;city=all">35 Homewood Ave</a> in Kitchener. You'll get the city's record for the building — units, permits, ward and coordinates — plus the owner's name if it is a business or institution. If the home is individually owned, the owner is listed as <code>PRIVATE</code>.</p>
+            <h3>Can I filter for residential buildings?</h3>
+            <p>Not reliably. Neither city publishes a building-use or property-class field in these open datasets, so there is no honest way to filter a list to “residential only”. Kitchener's zoning, parcels and assessment data are not open. Search by address for a specific home, or use the city's zoning map and MPAC for class information.</p>
             <h3>Can I search a person's name?</h3>
             <p>For a business or institution, yes. For an individual homeowner, no — the name is protected and the public dataset does not contain it. Use MPAC or ONLAND instead.</p>
             <h3>Why does one owner have hundreds of “records”?</h3>

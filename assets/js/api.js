@@ -16,6 +16,8 @@ import {
   titleCaseStreet,
 } from "./util.js";
 
+const PRIVATE_OWNER = "PRIVATE";
+
 export class DataError extends Error {
   constructor(message, options = {}) {
     super(message);
@@ -301,7 +303,7 @@ export async function getTopOwners({ limit = 8, signal } = {}) {
 
 export async function getOwnerPortfolio(rawName, { signal } = {}) {
   const name = String(rawName || "").trim().toUpperCase();
-  if (!name) return { owner: "", rows: [], buildings: [], truncated: false };
+  if (!name || name === PRIVATE_OWNER) return { owner: name, rows: [], buildings: [], truncated: false };
 
   const where = `OWNERNAME = '${escapeSql(name)}'`;
   let offset = 0;

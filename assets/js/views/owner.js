@@ -128,6 +128,20 @@ export async function renderOwner(root, params, ctx = {}) {
   root.querySelector("[data-print]")?.addEventListener("click", printPage);
   root.querySelector("[data-copy]")?.addEventListener("click", copyLink);
 
+  if (name === "PRIVATE") {
+    const content = root.querySelector("#owner-content");
+    if (content) {
+      content.innerHTML = `<div style="margin-top:26px">${emptyState({
+        iconName: "shield",
+        title: "“Private” is not an owner",
+        body: "Kitchener uses the marker <b>PRIVATE</b> for individually owned homes instead of publishing the owner's name. It is not a person or a company, so it has no portfolio. Search a civic address to open a specific home.",
+        actions: `<a class="btn btn--primary" href="#/search?q=35%20Homewood%20Ave&mode=address&city=all">Try an address search</a>
+          <a class="btn" href="#/about?section=residential">How to find a residential owner</a>`,
+      })}</div>`;
+    }
+    return;
+  }
+
   let portfolio;
   try {
     portfolio = await getOwnerPortfolio(name, { signal: ctx.signal });

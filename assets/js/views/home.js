@@ -20,6 +20,7 @@ export async function renderHome(root, params, ctx = {}) {
 
           <div class="hero__meta">
             <span>${icon("shield")} Residential owner names are protected by Ontario privacy law</span>
+            <span>${icon("pin")} Every home is searchable by address</span>
             <a href="#/about">How this works</a>
           </div>
         </div>

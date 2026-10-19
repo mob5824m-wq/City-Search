@@ -43,6 +43,7 @@ await check("home sample", () => renderHome(root, new URLSearchParams(), ctx()),
 await check("owner sample", () => renderOwner(root, new URLSearchParams("name=DREWLO%20HOLDINGS%20INC"), ctx()), ["425 Wilson Ave", "310 Queen St S"]);
 await check("property sample", () => renderProperty(root, new URLSearchParams("city=kitchener&civic=425&street=WILSON%20AVE"), ctx()), ["425 Wilson Ave", "Owner on file"]);
 await check("waterloo sample", () => renderProperty(root, new URLSearchParams("city=waterloo&address=213%20PASTERN%20TRAIL&id=95099.0"), ctx()), ["213 Pastern Trail", "Owner names aren't published"]);
+await check("private home sample", () => renderProperty(root, new URLSearchParams("city=kitchener&civic=35&street=HOMEWOOD%20AVE"), ctx()), ["35 Homewood Ave", "Owner name is private", "individually owned"]);
 await check("search sample", () => renderSearch(root, new URLSearchParams("q=Drewlo&mode=name&city=all"), ctx()), ["DREWLO HOLDINGS INC"]);
 await check("about", async () => renderAbout(root), ["A public record should be readable"]);
 console.log("sample DOM checks passed");
