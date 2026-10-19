@@ -237,7 +237,7 @@ function waterlooOwnerCard(building) {
       <div>
         <h3>Owner names aren't published for Waterloo</h3>
         <p>The City of Waterloo publishes civic addresses and building permits, but not property ownership. To identify the owner of record, use MPAC's property information or an ONLAND parcel register search. Both are linked below.</p>
-        <p style="margin-top:8px"><a href="https://www.mpac.ca/en/PropertyOwners/AboutMyProperty" target="_blank" rel="noopener">MPAC AboutMyProperty</a> · <a href="https://www.onland.ca/" target="_blank" rel="noopener">ONLAND parcel register</a> · <a href="#/about">Data guide</a></p>
+        <p style="margin-top:8px"><a href="https://www.aboutmyproperty.ca/" target="_blank" rel="noopener">MPAC AboutMyProperty</a> · <a href="https://www.onland.ca/" target="_blank" rel="noopener">ONLAND parcel register</a> · <a href="#/about">Data guide</a></p>
       </div>
     </div>
   </div>`;

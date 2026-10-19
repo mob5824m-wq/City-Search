@@ -59,7 +59,7 @@ export async function renderSearch(root, params, ctx = {}) {
               </div>
               <div class="callout callout--warm">
                 <h3>${icon("shield")} Looking for an individual?</h3>
-                <p>Homeowner names are not in the open data. Use <a href="https://www.mpac.ca/en/PropertyOwners/AboutMyProperty" target="_blank" rel="noopener">MPAC AboutMyProperty</a> or an <a href="https://www.onland.ca/" target="_blank" rel="noopener">ONLAND parcel register</a> search.</p>
+                <p>Homeowner names are not in the open data. Use <a href="https://www.aboutmyproperty.ca/" target="_blank" rel="noopener">MPAC AboutMyProperty</a> or an <a href="https://www.onland.ca/" target="_blank" rel="noopener">ONLAND parcel register</a> search.</p>
                 <p><a href="#/about">The data guide explains the official routes →</a></p>
               </div>
             ` : `

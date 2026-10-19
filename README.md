@@ -32,8 +32,8 @@ to the official routes for a residential ownership record (MPAC, ONLAND, city cl
 | --- | --- | --- | --- |
 | [Property Ownership Public](https://open-kitchenergis.opendata.arcgis.com/) | Kitchener | Owner names (business/institution/government only), civic address, unit, property unit ID, coordinates | Daily |
 | [Building Permits](https://open-kitchenergis.opendata.arcgis.com/) | Kitchener | Permit type, work, status, date, description, construction value | Daily |
-| [Address Points](https://opendata-city-of-waterloo.opendata.arcgis.com/) | Waterloo | Civic address, street, ward, coordinates | Regularly |
-| [Building Permits](https://opendata-city-of-waterloo.opendata.arcgis.com/) | Waterloo | Permit description, work, status, value, units | Daily |
+| [Address Points](https://data.waterloo.ca/) | Waterloo | Civic address, street, ward, coordinates | Regularly |
+| [Building Permits](https://data.waterloo.ca/) | Waterloo | Permit description, work, status, value, units | Daily |
 
 All requests go directly from the browser to the cities' ArcGIS FeatureServer endpoints
 (`services1.arcgis.com` and `services.arcgis.com`). There is no backend, API key, database

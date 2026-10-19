@@ -44,7 +44,7 @@ export const SOURCES = {
     url: "https://services.arcgis.com/ZpeBVw5o1kjit7LT/arcgis/rest/services/Addresses/FeatureServer/0",
     licence: "City of Waterloo Open Data Licence",
     licenceUrl: "https://www.waterloo.ca/council-and-city-administration/open-data-and-maps/",
-    portal: "https://opendata-city-of-waterloo.opendata.arcgis.com/",
+    portal: "https://data.waterloo.ca/",
     cadence: "Updated regularly",
     coverage: "Every valid civic address in Waterloo with ward, latitude and longitude. Waterloo does not publish owner names in its open data.",
   },
@@ -56,7 +56,7 @@ export const SOURCES = {
     url: "https://services.arcgis.com/ZpeBVw5o1kjit7LT/arcgis/rest/services/City_of_Waterloo_Building_Permits/FeatureServer/0",
     licence: "City of Waterloo Open Data Licence",
     licenceUrl: "https://www.waterloo.ca/council-and-city-administration/open-data-and-maps/",
-    portal: "https://opendata-city-of-waterloo.opendata.arcgis.com/",
+    portal: "https://data.waterloo.ca/",
     cadence: "Updated daily",
     coverage: "Permits issued, completed or occupancy-final in Waterloo, with work type, description, construction value and units.",
   },
@@ -78,17 +78,17 @@ export const OFFICIAL = {
   kitchenerProperty: {
     label: "City of Kitchener — property assessments",
     description: "How assessment and property taxes work in Kitchener",
-    href: "https://www.kitchener.ca/en/taxes-utilities-and-finance/property-assessments.aspx",
+    href: "https://www.kitchener.ca/taxes-utilities-and-finance/property-taxes/property-assessments/",
   },
   waterlooProperty: {
     label: "City of Waterloo — property taxes & assessment",
     description: "Waterloo's property tax and assessment information",
-    href: "https://www.waterloo.ca/en/city-hall/property-taxes-and-assessment.aspx",
+    href: "https://www.waterloo.ca/water-and-tax-billing/tax-billing/check-property-tax-rates/",
   },
   mpac: {
     label: "MPAC — AboutMyProperty",
     description: "Free assessment details for your own property; the starting point for an assessment roll request",
-    href: "https://www.mpac.ca/en/PropertyOwners/AboutMyProperty",
+    href: "https://www.aboutmyproperty.ca/",
   },
   onland: {
     label: "ONLAND — Ontario Land Property Records Portal",
@@ -103,17 +103,17 @@ export const OFFICIAL = {
   waterlooData: {
     label: "Waterloo Open Data",
     description: "Browse Waterloo's address and permit datasets",
-    href: "https://opendata-city-of-waterloo.opendata.arcgis.com/",
+    href: "https://data.waterloo.ca/",
   },
   kitchenerClerk: {
     label: "City of Kitchener — access to information",
     description: "Request records, including assessment information, from the City",
-    href: "https://www.kitchener.ca/en/council-and-city-administration/access-to-information.aspx",
+    href: "https://www.kitchener.ca/council-and-city-administration/transparency/freedom-of-information/freedom-of-information-requests/",
   },
   waterlooClerk: {
     label: "City of Waterloo — access to information",
     description: "Request records from the City of Waterloo",
-    href: "https://www.waterloo.ca/en/city-hall/access-to-information.aspx",
+    href: "https://www.waterloo.ca/council-and-city-administration/freedom-of-information-request/",
   },
 };
 
