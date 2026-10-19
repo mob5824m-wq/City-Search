@@ -22,11 +22,17 @@ function walk(dir, out = []) {
 test("index.html local assets exist", () => {
   const html = read("index.html");
   const refs = [...html.matchAll(/(?:href|src)="((?:assets|\.\/assets)\/[^"]+)"/g)].map((m) => m[1]);
-  assert.ok(refs.length >= 5);
+  assert.ok(refs.length >= 4);
   refs.forEach((ref) => {
     const clean = ref.replace(/^\.\//, "").split("?")[0];
     assert.ok(fs.existsSync(path.join(ROOT, clean)), `missing asset: ${clean}`);
   });
+});
+
+test("index.html loads no third-party runtime", () => {
+  const html = read("index.html");
+  const remote = [...html.matchAll(/<(?:script|link)[^>]+(?:src|href)="(https?:\/\/[^"]+)"/g)].map((m) => m[1]);
+  assert.deepEqual(remote, [], `index.html must not load remote scripts or styles: ${remote.join(", ")}`);
 });
 
 test("all relative ES module imports resolve", () => {

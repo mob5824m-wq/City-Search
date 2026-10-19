@@ -106,6 +106,9 @@ export function renderAbout(root) {
             <h3>4. Ask the municipality in writing</h3>
             <p>A formal freedom-of-information request can be made for city records, but personal information about a homeowner is usually withheld under MFIPPA. Start with <a href="${OFFICIAL.kitchenerClerk.href}" target="_blank" rel="noopener">Kitchener's access to information page</a> or <a href="${OFFICIAL.waterlooClerk.href}" target="_blank" rel="noopener">Waterloo's</a>.</p>
 
+            <h2 id="map">The map</h2>
+            <p>Maps on this site are drawn in the browser from the coordinates the city publishes — no Google, Esri, Mapbox or CARTO account, no API key and no tile requests. You get the true relative positions of a portfolio or a single property, with a scale bar and north arrow; the “Open in OpenStreetMap” link takes you to a full street map if you want one.</p>
+
             <h2 id="permits">Building permits</h2>
             <p>Permit history comes from each city's open building permit dataset and is matched to the property by civic address. It includes permit type, work, status, year and — where published — construction value and a short description.</p>
             <p>Coverage is not complete. Not every permit is published, older records may be missing, and construction value is declared by the applicant. A permit is a record of work authorized by the city, not proof that the work was done or inspected.</p>
@@ -140,6 +143,7 @@ export function renderAbout(root) {
               <a href="#/about?section=owner">Owner on file</a>
               <a href="#/about?section=name-search">Name search</a>
               <a href="#/about?section=residential">Residential owners</a>
+              <a href="#/about?section=map">The map</a>
               <a href="#/about?section=permits">Building permits</a>
               <a href="#/about?section=faq">Common questions</a>
               <a href="#/about?section=disclaimer">Disclaimer</a>

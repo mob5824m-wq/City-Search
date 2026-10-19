@@ -23,9 +23,10 @@ to the official routes for a residential ownership record (MPAC, ONLAND, city cl
 - **Built for real use** — live data with in-memory caching, debounced autocomplete,
   keyboard navigation, shareable URLs, saved records in `localStorage`, responsive layout
   and print styles.
-- **No map key** — the basemap is OpenStreetMap's keyless tile server. If tiles are blocked,
-  the map drops the basemap and shows the properties on a coordinate-true canvas with an
-  OpenStreetMap link, never a provider error.
+- **No map key, no tiles** — the map is drawn locally as inline SVG from the real
+  coordinates: graticule, scale bar, north arrow, drag-to-pan and zoom. It makes no network
+  request at all, so it works offline, inside a sandboxed iframe, and behind any map
+  provider's key wall. Links out to OpenStreetMap are optional anchors.
 - **Graceful failure** — if the city services are unreachable, the app switches to a small,
   clearly labelled sample of real records and offers a retry.
 
@@ -40,8 +41,8 @@ to the official routes for a residential ownership record (MPAC, ONLAND, city cl
 
 All requests go directly from the browser to the cities' ArcGIS FeatureServer endpoints
 (`services1.arcgis.com` and `services.arcgis.com`). There is no backend, API key, database
-or scraper. Basemap tiles come from `tile.openstreetmap.org` and need no key; the tile URL
-and attribution live in `assets/js/config.js` (`MAP`) if you ever want to swap providers.
+or scraper — and no basemap provider, since the map is drawn locally. If you later want
+street tiles, `assets/js/map.js` is the single place to add them (and their key).
 
 ### Privacy
 
@@ -92,7 +93,6 @@ node tests/saved.local.mjs         # save/unsave + badge state
 index.html                 app shell, inline SVG icon sprite
 assets/css/app.css         design system + components + responsive + print
 assets/fonts/              self-hosted Fraunces & Inter (woff2)
-assets/vendor/leaflet/     self-hosted Leaflet 1.9.4
 assets/js/
   app.js                   bootstrap + hash router
   config.js                data source registry, official links, limits
@@ -101,7 +101,7 @@ assets/js/
   sample.js                small real-data extract for offline fallback
   util.js                  pure helpers (parsing, grouping, CSV, formatting)
   store.js                 saved records (localStorage)
-  map.js                   Leaflet wrapper + fallback
+  map.js                   self-contained SVG map (no tiles, no key)
   ui.js                    search combobox, tags, toasts, shared components
   views/                   home, search, owner, property, saved, about
 server.py                  small static server (0.0.0.0, PORT)
@@ -124,6 +124,8 @@ tests/                     node:test unit tests + static asset checks
 - Waterloo has no public ownership layer; its pages link to MPAC/ONLAND.
 - The live services must be reachable from the browser. If they are not, the sample fallback
   is shown and labelled.
+- The map shows property positions on a locally drawn grid, not street geometry. Use the
+  "Open in OpenStreetMap" link for a street basemap.
 - Records are provided “as is”. Verify with the official source.
 
 ## Licence

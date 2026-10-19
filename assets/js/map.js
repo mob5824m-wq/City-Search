@@ -1,19 +1,83 @@
 /**
- * Thin Leaflet wrapper with a graceful, self-contained fallback.
- * Tiles come from OpenStreetMap (no API key); the dots are drawn locally.
- * If the tile server is unreachable or refuses the request, the basemap is
- * dropped and the markers stay on a plain, coordinate-true canvas — the app
- * never shows a third-party "API key required" error.
+ * A self-contained map.
+ *
+ * It draws its own basemap — graticule, scale bar, north arrow and markers —
+ * as inline SVG, projected from the real coordinates. There are no map tiles,
+ * no Leaflet, and no network request of any kind, so no provider can ever
+ * answer with "API key required". Property positions stay accurate relative
+ * to each other; links out to OpenStreetMap are ordinary anchors the reader
+ * chooses to follow.
  */
 
 import { escapeHtml } from "./util.js";
-import { MAP } from "./config.js";
+
+const M_PER_DEG_LAT = 110574;
+const M_PER_DEG_LNG = 111320;
+const MIN_ZOOM = 10;
+const MAX_ZOOM = 19;
+const DEFAULT_SIZE = { width: 720, height: 420 };
+const PAD = 54;
+
+/* Ground resolution of a Web-Mercator tile at this zoom and latitude. */
+export function metresPerPixel(zoom, lat) {
+  return (156543.03392 * Math.cos((lat * Math.PI) / 180)) / Math.pow(2, zoom);
+}
+
+export function projectPoint(point, center, mpp, size) {
+  const cosLat = Math.cos((center.lat * Math.PI) / 180);
+  return {
+    x: size.width / 2 + ((Number(point.lng) - center.lng) * M_PER_DEG_LNG * cosLat) / mpp,
+    y: size.height / 2 - ((Number(point.lat) - center.lat) * M_PER_DEG_LAT) / mpp,
+  };
+}
+
+export function fitView(points, size = DEFAULT_SIZE, pad = PAD) {
+  const valid = (points || []).filter((p) => Number.isFinite(Number(p.lat)) && Number.isFinite(Number(p.lng)));
+  if (!valid.length) {
+    return { center: { lat: 43.4516, lng: -80.4925 }, mpp: metresPerPixel(13, 43.45) };
+  }
+  const lats = valid.map((p) => Number(p.lat));
+  const lngs = valid.map((p) => Number(p.lng));
+  const minLat = Math.min(...lats);
+  const maxLat = Math.max(...lats);
+  const minLng = Math.min(...lngs);
+  const maxLng = Math.max(...lngs);
+  const center = { lat: (minLat + maxLat) / 2, lng: (minLng + maxLng) / 2 };
+  const cosLat = Math.cos((center.lat * Math.PI) / 180);
+  const widthM = (maxLng - minLng) * M_PER_DEG_LNG * cosLat;
+  const heightM = (maxLat - minLat) * M_PER_DEG_LAT;
+  const usableW = Math.max(60, size.width - pad * 2);
+  const usableH = Math.max(60, size.height - pad * 2);
+  const needed = Math.max(widthM / usableW, heightM / usableH);
+  const fallback = metresPerPixel(16, center.lat);
+  const mpp = Math.min(
+    metresPerPixel(MIN_ZOOM, center.lat),
+    Math.max(metresPerPixel(MAX_ZOOM, center.lat), needed > 0 && Number.isFinite(needed) ? needed : fallback)
+  );
+  return { center, mpp };
+}
+
+function niceDistance(target) {
+  const pow = Math.pow(10, Math.floor(Math.log10(Math.max(1, target))));
+  const n = target / pow;
+  const step = n >= 5 ? 5 : n >= 2 ? 2 : 1;
+  return step * pow;
+}
+
+function formatDistance(m) {
+  return m >= 1000 ? `${m / 1000} km` : `${Math.round(m)} m`;
+}
+
+function pointLabel(p) {
+  const text = String(p.label || p.address || "");
+  return text.length > 28 ? `${text.slice(0, 27)}…` : text;
+}
 
 export function renderMap(container, points, options = {}) {
   if (!container) return null;
 
   if (container._ledgerMap) {
-    try { container._ledgerMap.remove(); } catch { /* already gone */ }
+    container._ledgerMap.destroy();
     container._ledgerMap = null;
   }
 
@@ -21,156 +85,255 @@ export function renderMap(container, points, options = {}) {
     (p) => Number.isFinite(Number(p.lat)) && Number.isFinite(Number(p.lng))
   );
 
-  if (!window.L || valid.length === 0) {
-    container.innerHTML = fallbackHtml(valid, options);
+  if (!valid.length) {
+    container.innerHTML = `<div class="locmap locmap--empty">
+      <div class="locmap__empty">
+        <strong>No coordinates on file</strong>
+        <span>${escapeHtml(options.emptyMessage || "The city data for this record has no latitude and longitude.")}</span>
+      </div>
+    </div>`;
     return null;
   }
 
-  container.innerHTML = "";
-  const map = window.L.map(container, {
-    zoomControl: true,
-    scrollWheelZoom: false,
-    attributionControl: true,
-    preferCanvas: true,
-    tap: false,
-  });
+  const size = { ...DEFAULT_SIZE };
+  let view = fitView(valid, size);
+  let activeKey = options.activeKey || null;
+  let destroyed = false;
 
-  if (options.ariaLabel) {
-    map.getContainer().setAttribute("role", "img");
-    map.getContainer().setAttribute("aria-label", options.ariaLabel);
+  container.innerHTML = `<div class="locmap" data-locmap>
+    <svg class="locmap__svg" role="img"></svg>
+    <div class="locmap__ui">
+      <div class="locmap__zoom" role="group" aria-label="Map zoom">
+        <button type="button" data-zoom="in" aria-label="Zoom in">+</button>
+        <button type="button" data-zoom="out" aria-label="Zoom out">−</button>
+        <button type="button" data-zoom="fit" aria-label="Fit all properties">Fit</button>
+      </div>
+      <a class="locmap__osm" data-osm target="_blank" rel="noopener">Open in OpenStreetMap</a>
+    </div>
+    <p class="locmap__hint">Drag to pan · double-click to zoom</p>
+  </div>`;
+
+  const root = container.querySelector("[data-locmap]");
+  const svg = root.querySelector("svg");
+  const osmLink = root.querySelector("[data-osm]");
+
+  function measure() {
+    const width = container.clientWidth || DEFAULT_SIZE.width;
+    const height = container.clientHeight || DEFAULT_SIZE.height;
+    size.width = Math.max(240, Math.round(width));
+    size.height = Math.max(160, Math.round(height));
   }
 
-  const tiles = window.L.tileLayer(MAP.tiles, {
-    attribution: MAP.attribution,
-    maxZoom: MAP.maxZoom || 19,
-    detectRetina: true,
-  }).addTo(map);
+  function syncOsmLink() {
+    osmLink.href = `https://www.openstreetmap.org/#map=${zoomFor(view.mpp, view.center.lat).toFixed(0)}/${view.center.lat.toFixed(6)}/${view.center.lng.toFixed(6)}`;
+  }
 
-  let tilesLoaded = 0;
-  let degraded = false;
-  const card = container.closest(".map-card") || container;
-  const degrade = () => {
-    if (degraded || tilesLoaded > 0) return;
-    degraded = true;
-    try { map.removeLayer(tiles); } catch { /* already gone */ }
-    card.classList.add("map-card--plain");
-    if (!card.querySelector(".map-card__note")) {
-      const note = document.createElement("div");
-      note.className = "map-card__note";
-      note.textContent = MAP.note || "Street basemap unavailable";
-      card.appendChild(note);
+  function draw() {
+    if (destroyed) return;
+    const { center, mpp } = view;
+    const project = (p) => projectPoint(p, center, mpp, size);
+
+    const gridMeters = niceDistance(78 * mpp);
+    const gridPx = gridMeters / mpp;
+    const centrePx = { x: size.width / 2, y: size.height / 2 };
+
+    // Graticule, anchored on the projection centre so it lines up with markers.
+    let lines = "";
+    const xStart = centrePx.x % gridPx;
+    for (let x = xStart; x <= size.width; x += gridPx) {
+      lines += `<line x1="${x.toFixed(1)}" y1="0" x2="${x.toFixed(1)}" y2="${size.height}"/>`;
     }
+    const yStart = centrePx.y % gridPx;
+    for (let y = yStart; y <= size.height; y += gridPx) {
+      lines += `<line x1="0" y1="${y.toFixed(1)}" x2="${size.width}" y2="${y.toFixed(1)}"/>`;
+    }
+
+    // Scale bar: pick a round distance close to 96px wide.
+    const scaleMeters = niceDistance(96 * mpp);
+    const scalePx = scaleMeters / mpp;
+
+    const dense = valid.length > 10;
+    const markers = valid.map((p, i) => {
+      const { x, y } = project(p);
+      const label = pointLabel(p);
+      const active = p.key && p.key === activeKey;
+      const r = options.big ? 7 : 5.4;
+      return `<g class="locmap__marker${active ? " is-active" : ""}${dense ? " is-dense" : ""}"
+          data-key="${escapeHtml(String(p.key || i))}" data-index="${i}"
+          transform="translate(${x.toFixed(1)} ${y.toFixed(1)})"
+          tabindex="0" role="button"
+          aria-label="${escapeHtml(p.label || p.address || "Property")}">
+        <title>${escapeHtml(p.label || p.address || "Property")}</title>
+        <circle class="locmap__halo" r="${r + 6}"></circle>
+        <circle class="locmap__dot" r="${r}"></circle>
+        <text class="locmap__label" x="${r + 8}" y="4">${escapeHtml(label)}</text>
+      </g>`;
+    }).join("");
+
+    svg.setAttribute("viewBox", `0 0 ${size.width} ${size.height}`);
+    svg.setAttribute("width", size.width);
+    svg.setAttribute("height", size.height);
+    if (options.ariaLabel) svg.setAttribute("aria-label", options.ariaLabel);
+    svg.innerHTML = `
+      <rect class="locmap__bg" x="0" y="0" width="${size.width}" height="${size.height}"/>
+      <g class="locmap__grid" aria-hidden="true">${lines}</g>
+      <g class="locmap__scale" aria-hidden="true" transform="translate(14 ${size.height - 18})">
+        <line x1="0" y1="0" x2="${scalePx.toFixed(1)}" y2="0"/>
+        <line x1="0" y1="-4" x2="0" y2="4"/>
+        <line x1="${scalePx.toFixed(1)}" y1="-4" x2="${scalePx.toFixed(1)}" y2="4"/>
+        <text x="0" y="-8">${formatDistance(scaleMeters)}</text>
+      </g>
+      <g class="locmap__north" aria-hidden="true" transform="translate(${size.width - 22} 30)">
+        <path d="M0 8 4.6 -2 0 -0.4 -4.6 -2Z"/>
+        <text x="0" y="18">N</text>
+      </g>
+      <g class="locmap__markers">${markers}</g>`;
+
+    root.classList.toggle("locmap--dense", dense);
+    syncOsmLink();
+  }
+
+  function setView(next) {
+    const lat = Math.max(-85, Math.min(85, next.center.lat));
+    view = {
+      center: { lat, lng: next.center.lng },
+      mpp: Math.min(
+        metresPerPixel(MIN_ZOOM, lat),
+        Math.max(metresPerPixel(MAX_ZOOM, lat), next.mpp)
+      ),
+    };
+    draw();
+  }
+
+  function zoomBy(factor, anchor = view.center) {
+    setView({ center: anchor, mpp: view.mpp / factor });
+  }
+
+  function focus(key, zoom) {
+    const point = valid.find((p) => String(p.key) === String(key));
+    if (!point) return;
+    activeKey = key;
+    const targetZoom = zoom || 17;
+    setView({
+      center: { lat: Number(point.lat), lng: Number(point.lng) },
+      mpp: metresPerPixel(targetZoom, Number(point.lat)),
+    });
+  }
+
+  function fit() {
+    view = fitView(valid, size);
+    draw();
+  }
+
+  // --- interaction -------------------------------------------------------
+  let drag = null;
+  svg.addEventListener("pointerdown", (e) => {
+    const marker = e.target.closest && e.target.closest(".locmap__marker");
+    if (marker) return;
+    drag = {
+      x: e.clientX,
+      y: e.clientY,
+      center: { ...view.center },
+      cosLat: Math.cos((view.center.lat * Math.PI) / 180),
+    };
+    root.classList.add("is-dragging");
+    if (svg.setPointerCapture) {
+      try { svg.setPointerCapture(e.pointerId); } catch { /* not supported */ }
+    }
+  });
+
+  svg.addEventListener("pointermove", (e) => {
+    if (!drag) return;
+    const dx = e.clientX - drag.x;
+    const dy = e.clientY - drag.y;
+    setView({
+      center: {
+        lat: drag.center.lat + (dy * view.mpp) / M_PER_DEG_LAT,
+        lng: drag.center.lng - (dx * view.mpp) / (M_PER_DEG_LNG * drag.cosLat),
+      },
+      mpp: view.mpp,
+    });
+  });
+
+  const endDrag = () => {
+    drag = null;
+    root.classList.remove("is-dragging");
   };
-  tiles.on("tileload", () => { tilesLoaded += 1; });
-  tiles.on("tileerror", () => { setTimeout(degrade, 900); });
-  // Some blocked networks never fire tileerror; if nothing loaded, still degrade.
-  setTimeout(degrade, 4000);
+  svg.addEventListener("pointerup", endDrag);
+  svg.addEventListener("pointercancel", endDrag);
+  svg.addEventListener("pointerleave", endDrag);
 
-  const markers = new Map();
-  const bounds = window.L.latLngBounds();
-
-  valid.forEach((p) => {
-    const marker = window.L.circleMarker([Number(p.lat), Number(p.lng)], {
-      radius: options.big ? 8 : 6,
-      color: "#fffdf8",
-      weight: 1.6,
-      fillColor: options.color || "#ad5128",
-      fillOpacity: 1,
-      bubblingMouseEvents: false,
-    }).addTo(map);
-
-    if (p.label) {
-      marker.bindTooltip(escapeHtml(p.label), {
-        direction: "top",
-        offset: [0, -6],
-        opacity: 0.96,
-        className: "ledger-tip",
-      });
-    }
-
-    marker.on("click", () => {
-      if (typeof options.onSelect === "function") options.onSelect(p.key);
-      if (p.key && markers.has(p.key)) highlight(markers, p.key);
-    });
-
-    marker.on("mouseover", () => marker.setStyle({ fillColor: "#12352b" }));
-    marker.on("mouseout", () => {
-      const active = options.activeKey && p.key === options.activeKey;
-      marker.setStyle({ fillColor: active ? "#12352b" : (options.color || "#ad5128") });
-    });
-
-    if (p.key) markers.set(p.key, marker);
-    bounds.extend([Number(p.lat), Number(p.lng)]);
+  svg.addEventListener("dblclick", (e) => {
+    if (e.target.closest && e.target.closest(".locmap__marker")) return;
+    zoomBy(2);
   });
 
-  if (valid.length === 1) {
-    map.setView([Number(valid[0].lat), Number(valid[0].lng)], options.zoom || 16);
-  } else {
-    map.fitBounds(bounds, { padding: [42, 42], maxZoom: 15 });
+  svg.addEventListener("wheel", (e) => {
+    if (!e.ctrlKey && !e.metaKey) return;
+    e.preventDefault();
+    zoomBy(e.deltaY < 0 ? 1.35 : 1 / 1.35);
+  }, { passive: false });
+
+  root.querySelector('[data-zoom="in"]').addEventListener("click", () => zoomBy(1.6));
+  root.querySelector('[data-zoom="out"]').addEventListener("click", () => zoomBy(1 / 1.6));
+  root.querySelector('[data-zoom="fit"]').addEventListener("click", fit);
+
+  function selectMarker(el) {
+    const key = el.dataset.key;
+    activeKey = key;
+    root.querySelectorAll(".locmap__marker").forEach((m) => {
+      m.classList.toggle("is-active", m.dataset.key === key);
+    });
+    if (typeof options.onSelect === "function") options.onSelect(key);
   }
 
-  if (options.activeKey && markers.has(options.activeKey)) {
-    highlight(markers, options.activeKey);
+  svg.addEventListener("click", (e) => {
+    const marker = e.target.closest && e.target.closest(".locmap__marker");
+    if (marker) selectMarker(marker);
+  });
+
+  svg.addEventListener("keydown", (e) => {
+    const marker = e.target.closest && e.target.closest(".locmap__marker");
+    if (!marker) return;
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      selectMarker(marker);
+    }
+  });
+
+  let resizeObserver = null;
+  if (typeof ResizeObserver === "function") {
+    resizeObserver = new ResizeObserver(() => {
+      measure();
+      draw();
+    });
+    resizeObserver.observe(container);
   }
 
-  setTimeout(() => {
-    try { map.invalidateSize(); } catch { /* noop */ }
-  }, 140);
+  measure();
+  draw();
 
   const api = {
-    map,
-    markers,
-    focus(key, zoom = 16) {
-      const p = valid.find((x) => x.key === key);
-      if (!p) return;
-      map.flyTo([Number(p.lat), Number(p.lng)], zoom, { duration: 0.6 });
-      highlight(markers, key);
-    },
-    fit() {
-      if (valid.length === 1) {
-        map.setView([Number(valid[0].lat), Number(valid[0].lng)], 16);
-      } else {
-        map.fitBounds(bounds, { padding: [42, 42], maxZoom: 15 });
-      }
+    focus,
+    fit,
+    redraw: draw,
+    get center() { return { ...view.center }; },
+    get metresPerPixel() { return view.mpp; },
+    destroy() {
+      destroyed = true;
+      if (resizeObserver) resizeObserver.disconnect();
+      container.innerHTML = "";
+      container._ledgerMap = null;
     },
   };
 
-  container._ledgerMap = map;
+  container._ledgerMap = api;
   return api;
 }
 
-function highlight(markers, key) {
-  markers.forEach((marker, k) => {
-    marker.setStyle({ fillColor: k === key ? "#12352b" : "#ad5128", radius: k === key ? 8 : 6 });
-    if (k === key && marker.bringToFront) marker.bringToFront();
-  });
-}
-
-function fallbackHtml(points, options) {
-  const valid = points || [];
-  const first = valid[0];
-  const link = first
-    ? `<a href="https://www.openstreetmap.org/#map=16/${first.lat}/${first.lng}" target="_blank" rel="noopener">Open this area in OpenStreetMap</a>`
-    : "";
-  const coords = first ? `${Number(first.lat).toFixed(5)}, ${Number(first.lng).toFixed(5)}` : "";
-  const count = valid.length > 1 ? `${valid.length} properties` : "";
-  const body = options && options.emptyMessage
-    ? escapeHtml(options.emptyMessage)
-    : "The street basemap couldn't load, so this is a locator card rather than a map.";
-  return `<div class="map-card__fallback">
-    <div class="map-card__locator">
-      <svg viewBox="0 0 120 84" aria-hidden="true" focusable="false">
-        <rect x="0.5" y="0.5" width="119" height="83" rx="8" fill="none" stroke="currentColor" stroke-opacity=".18"/>
-        <path d="M18 0v84M54 0v84M90 0v84M0 26h120M0 58h120" stroke="currentColor" stroke-opacity=".12"/>
-        <circle cx="60" cy="42" r="15" fill="currentColor" fill-opacity=".1"/>
-        <circle cx="60" cy="42" r="5.5" fill="var(--clay)" stroke="var(--card)" stroke-width="2"/>
-      </svg>
-      <strong>Map preview unavailable</strong>
-      <span>${body}</span>
-      ${coords ? `<span class="map-card__coords">${escapeHtml(coords)}${count ? ` · ${escapeHtml(count)}` : ""}</span>` : ""}
-      ${link ? `<span class="map-card__link">${link}</span>` : ""}
-    </div>
-  </div>`;
+function zoomFor(mpp, lat) {
+  const z = Math.log2((156543.03392 * Math.cos((lat * Math.PI) / 180)) / mpp);
+  return Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, Math.round(z)));
 }
 
 export function pointsFromBuildings(buildings) {
