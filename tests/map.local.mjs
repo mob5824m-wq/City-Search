@@ -37,9 +37,16 @@ assert.equal(svg.getAttribute("aria-label"), "Three properties");
 assert.equal(host.querySelectorAll(".locmap__marker").length, 3);
 assert.equal(host.querySelectorAll(".locmap__marker[role=button]").length, 3, "markers must be operable");
 
-// No network: no fetch, no <img> tiles.
-assert.equal(fetches, 0, "map must not fetch");
-assert.equal(host.querySelectorAll("img").length, 0, "map must not request tiles");
+// Street cover now comes from Esri's keyless tile service — as images, never
+// through fetch(), and never carrying a key.
+const tiles = [...host.querySelectorAll(".locmap__tiles img")];
+assert.ok(tiles.length >= 1, "expected street tiles");
+tiles.forEach((img) => {
+  assert.match(img.src, /^https:\/\/server\.arcgisonline\.com\/ArcGIS\/rest\/services\/World_Street_Map\/MapServer\/tile\//);
+  assert.doesNotMatch(img.src, /token=|api[_-]?key/i);
+});
+assert.equal(fetches, 0, "tiles must load as images, not via fetch");
+assert.ok(host.querySelector(".locmap__attribution").textContent.includes("Esri"));
 
 // The basemap is drawn locally: grid, scale bar and north arrow.
 assert.ok(host.querySelector(".locmap__grid line"), "graticule missing");
@@ -74,6 +81,24 @@ host.querySelector('[data-zoom="in"]').dispatchEvent(new win.MouseEvent("click",
 assert.ok(api.metresPerPixel < fitted, "zoom in should reduce metres per pixel");
 host.querySelector('[data-zoom="out"]').dispatchEvent(new win.MouseEvent("click", { bubbles: true }));
 assert.ok(api.metresPerPixel > fitted * 0.99, "zoom out should restore scale");
+
+// If the tile host refuses every request, the map degrades instead of breaking.
+// (The first batch of failures makes it retry the fallback host.)
+for (let round = 0; round < 4 && !api.tilesBlocked; round += 1) {
+  const imgs = [...host.querySelectorAll(".locmap__tiles img")];
+  if (!imgs.length) break;
+  imgs.forEach((img) => img.dispatchEvent(new win.Event("error")));
+}
+assert.equal(api.tilesBlocked, true, "should give up after repeated tile failures");
+assert.equal(host.querySelectorAll(".locmap__tiles img").length, 0, "failed tiles should be cleared");
+assert.equal(host.querySelector("[data-note]").hidden, false);
+assert.ok(host.textContent.includes("Street tiles blocked"));
+assert.equal(host.querySelectorAll(".locmap__marker").length, 3, "markers must survive tile failure");
+
+// The Streets button retries the basemap.
+host.querySelector("[data-basemap]").dispatchEvent(new win.MouseEvent("click", { bubbles: true }));
+assert.equal(api.tilesBlocked, false, "retry should re-enable tiles");
+assert.ok(host.querySelectorAll(".locmap__tiles img").length >= 1, "retry should request tiles again");
 
 // The outbound link is an anchor, not a tile request.
 const osm = host.querySelector(".locmap__osm");

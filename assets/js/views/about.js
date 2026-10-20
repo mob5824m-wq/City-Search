@@ -108,7 +108,8 @@ export function renderAbout(root) {
             <p>A formal freedom-of-information request can be made for city records, but personal information about a homeowner is usually withheld under MFIPPA. Start with <a href="${OFFICIAL.kitchenerClerk.href}" target="_blank" rel="noopener">Kitchener's access to information page</a> or <a href="${OFFICIAL.waterlooClerk.href}" target="_blank" rel="noopener">Waterloo's</a>.</p>
 
             <h2 id="map">The map</h2>
-            <p>Maps on this site are drawn in the browser from the coordinates the city publishes — no Google, Esri, Mapbox or CARTO account, no API key and no tile requests. You get the true relative positions of a portfolio or a single property, with a scale bar and north arrow; the “Open in OpenStreetMap” link takes you to a full street map if you want one.</p>
+            <p>Street cover comes from Esri's ArcGIS Online World Street Map, whose tile endpoint is served without a key or account — the one large provider that still is. The markers, scale bar and north arrow are drawn by this site from the city coordinates, so the positions are exact whether or not the tiles arrive. If a network blocks the tile server, the map drops to a plain drafting grid, keeps every marker, and says so on the map. Nothing about the records depends on the basemap.</p>
+            <p>Use the <b>Streets</b> button under the zoom controls to switch between the street map and the plain grid; the “Open in OpenStreetMap” link opens the same area in a full map if you want one.</p>
 
             <h2 id="permits">Building permits</h2>
             <p>Permit history comes from each city's open building permit dataset and is matched to the property by civic address. It includes permit type, work, status, year and — where published — construction value and a short description.</p>

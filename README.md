@@ -23,10 +23,10 @@ to the official routes for a residential ownership record (MPAC, ONLAND, city cl
 - **Built for real use** — live data with in-memory caching, debounced autocomplete,
   keyboard navigation, shareable URLs, saved records in `localStorage`, responsive layout
   and print styles.
-- **No map key, no tiles** — the map is drawn locally as inline SVG from the real
-  coordinates: graticule, scale bar, north arrow, drag-to-pan and zoom. It makes no network
-  request at all, so it works offline, inside a sandboxed iframe, and behind any map
-  provider's key wall. Links out to OpenStreetMap are optional anchors.
+- **A map that works without a key** — street cover from Esri's ArcGIS Online World
+  Street Map (keyless), with markers, scale bar and north arrow drawn locally in SVG.
+  If tiles are blocked, the map falls back to a drafting grid and keeps every marker at
+  its true relative position, so records never depend on a basemap provider.
 - **Graceful failure** — if the city services are unreachable, the app switches to a small,
   clearly labelled sample of real records and offers a retry.
 
@@ -41,8 +41,8 @@ to the official routes for a residential ownership record (MPAC, ONLAND, city cl
 
 All requests go directly from the browser to the cities' ArcGIS FeatureServer endpoints
 (`services1.arcgis.com` and `services.arcgis.com`). There is no backend, API key, database
-or scraper — and no basemap provider, since the map is drawn locally. If you later want
-street tiles, `assets/js/basemap.js` is the single place to add them (and their key).
+or scraper. Street tiles come from Esri's keyless ArcGIS Online service; swap the templates
+in `MAP` (`assets/js/config.js`) to change providers, and nothing else needs to move.
 
 ### Privacy
 
@@ -104,7 +104,7 @@ assets/js/
   sample.js                small real-data extract for offline fallback
   util.js                  pure helpers (parsing, grouping, CSV, formatting)
   store.js                 saved records (localStorage)
-  basemap.js               self-contained SVG map (no tiles, no key)
+  basemap.js               tile layer + locally drawn markers (no key)
   ui.js                    search combobox, tags, toasts, shared components
   views/                   home, search, owner, property, saved, about
 server.py                  small static server (0.0.0.0, PORT)
@@ -130,8 +130,10 @@ tests/                     node:test unit tests + static asset checks
 - Waterloo has no public ownership layer; its pages link to MPAC/ONLAND.
 - The live services must be reachable from the browser. If they are not, the sample fallback
   is shown and labelled.
-- The map shows property positions on a locally drawn grid, not street geometry. Use the
-  "Open in OpenStreetMap" link for a street basemap.
+- Street cover uses Esri's ArcGIS Online World Street Map, served without a key. That
+  service is labelled "in mature support" by Esri and is not the newest imagery; for
+  production use, switch `MAP.tiles` in `assets/js/config.js` to a licensed provider. Where
+  tiles are blocked, the map shows a plain grid with accurate relative positions.
 - Records are provided “as is”. Verify with the official source.
 
 ## Licence

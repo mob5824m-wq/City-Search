@@ -49,6 +49,13 @@ win.dispatchEvent(new win.HashChangeEvent("hashchange"));
 await wait("#app .locmap");
 await new Promise((r) => setTimeout(r, 300));
 
+// Street cover comes from Esri as plain <img> tiles, with attribution.
+const imgs = document.querySelectorAll(".locmap__tiles img");
+console.log("tile images:", imgs.length);
+assert.ok(imgs.length >= 1, "street tiles expected");
+imgs.forEach((img) => assert.match(img.getAttribute("src"), /arcgisonline\.com.*World_Street_Map/));
+assert.ok(document.querySelector(".locmap__attribution").textContent.includes("Esri"));
+
 const markers = document.querySelectorAll(".locmap__marker");
 const svg = document.querySelector(".locmap__svg");
 console.log("markers:", markers.length, "svg children:", svg.childElementCount);

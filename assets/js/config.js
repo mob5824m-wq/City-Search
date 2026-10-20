@@ -117,6 +117,27 @@ export const OFFICIAL = {
   },
 };
 
+/**
+ * Street basemap. Esri's ArcGIS Online World Street Map tiles are served
+ * without a key or account, which is why they work where the keyed basemaps
+ * (CARTO, Mapbox, Esri's newer styles) refuse the request.
+ *
+ * If these tiles are blocked — a sandboxed preview, a corporate proxy — the map
+ * quietly falls back to the locally drawn grid and keeps every marker at its
+ * true relative position. Nothing about the data depends on the basemap.
+ */
+export const MAP = {
+  tiles: [
+    "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
+    "https://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
+  ],
+  attribution: "Tiles &copy; Esri &mdash; Source: Esri, Maxar, Earthstar Geographics, and the GIS User Community",
+  attributionShort: "Tiles © Esri",
+  maxZoom: 19,
+  tileSize: 256,
+  plainNote: "Street tiles blocked — showing plotted positions",
+};
+
 export const LIMITS = {
   suggestOwners: 6,
   suggestAddresses: 6,
