@@ -92,7 +92,7 @@ export const OFFICIAL = {
   },
   onland: {
     label: "ONLAND — Ontario Land Property Records Portal",
-    description: "Search parcel registers and registered ownership for a fee",
+    description: "Provincial parcel registers: $36.50 for the first page, set by Ontario's tariff",
     href: "https://www.onland.ca/",
   },
   kitchenerData: {

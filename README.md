@@ -123,7 +123,10 @@ tests/                     node:test unit tests + static asset checks
 ## Limitations
 
 - Kitchener and Waterloo only (not Cambridge or the townships).
-- Residential owner names are not available in the open data.
+- Residential owner names are not available in the open data. The authoritative record is a
+  provincial parcel register ($36.50 for the first page, set by Ontario's tariff, not by this
+  site); free alternatives are an in-person assessment-roll inspection, MPAC AboutMyProperty
+  for a property you own, and a tenancy agreement if you rent.
 - Waterloo has no public ownership layer; its pages link to MPAC/ONLAND.
 - The live services must be reachable from the browser. If they are not, the sample fallback
   is shown and labelled.

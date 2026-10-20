@@ -197,7 +197,7 @@ function kitchenerOwnerCard(building, publicUnits, privateUnits) {
           <p>This home is individually owned, so the City of Kitchener withholds the owner's name under Ontario's Municipal Freedom of Information and Protection of Privacy Act. The city still records that it is privately owned, and the rest of this record stays public.</p>
           <p class="private-callout__sub">To find the owner of a specific home, use one of these lawful routes:</p>
           <ol class="steps">
-            <li><strong>ONLAND parcel register</strong> — the registered owner, PIN and title history for this address. Open to anyone for a small fee; the Waterloo registry office is LRO 58. <a href="https://www.onland.ca/" target="_blank" rel="noopener">Search on ONLAND</a></li>
+            <li><strong>ONLAND parcel register</strong> — the registered owner, PIN and title history for this address. The province charges <b>$36.50</b> for the first page and $2.56 for each extra page (2025 tariff); anyone may buy it. Ledger KW charges nothing — that money goes to Ontario's land registry. Waterloo's registry office is LRO 58. <a href="https://www.onland.ca/" target="_blank" rel="noopener">Search on ONLAND</a></li>
             <li><strong>The assessment roll</strong> — owner names on the roll can be inspected in person at the City Clerk's office at Kitchener City Hall during office hours.</li>
             <li><strong>MPAC AboutMyProperty</strong> — free if you own the property; it shows the assessment details and roll number used by the city. <a href="https://www.aboutmyproperty.ca/" target="_blank" rel="noopener">Open MPAC</a></li>
           </ol>
